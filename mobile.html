@@ -1,0 +1,85 @@
+<html>
+<head>
+	<title>Draw</title>
+	<script type="text/javascript">
+		///////////////////////////////
+		//                   
+		// UPDATE DRAW CODE FOR MOBILE 
+		//
+		// Mobile can't detect onmousedown, etc.
+		// Need to use touchstart, etc.
+		// Updated code based on:
+		// https://stackoverflow.com/questions/36312150/mousedown-event-not-firing-on-tablet-mobile-html5-canvas/36323131
+		//                   
+		///////////////////////////////
+		
+		// some defaults
+		var canvas;
+		var ctx;
+		
+		// drawing based on the following tutorial:
+		// https://levelup.gitconnected.com/html5-canvas-drawing-application-on-github-pages-beginner-friendly-tutorial-5d50b99adb6a 
+		window.addEventListener("load", () => {
+			// pointer to canvas
+			canvas = document.getElementById('draw_area');
+			// context
+			ctx = canvas.getContext('2d');
+			resize();
+
+			// internal functions
+			let painting = false;
+		
+			function startPosition(e) {
+				painting = true;
+				draw(e);
+				e.preventDefault()
+			}
+			function finishedPosition(e) {
+				painting = false;
+				ctx.beginPath();
+				e.preventDefault()
+			}
+			function draw(e) {
+				if (!painting) { return; }
+				ctx.lineWidth = 3;
+				ctx.lineCap = 'round';
+				var x = (e.targetTouches[0] ? e.targetTouches[0].pageX : e.changedTouches[e.changedTouches.length-1].pageX);
+				var y = (e.targetTouches[0] ? e.targetTouches[0].pageY : e.changedTouches[e.changedTouches.length-1].pageY);
+				ctx.lineTo(x, y);
+				ctx.stroke();
+				ctx.beginPath();
+				ctx.moveTo(x, y);
+				e.preventDefault()
+			}
+
+			// event listeners
+			canvas.addEventListener("touchstart", startPosition);
+			canvas.addEventListener("touchmove", finishedPosition);
+			canvas.addEventListener("touchend", draw)
+		});
+		
+		// resize fix (for mouse x and y fix) from:
+		// https://stackoverflow.com/a/30684711 
+		window.addEventListener('resize', resize);
+		// resize canvas
+		function resize() {
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+		}
+
+	</script>
+	<style>
+		body {
+			margin: 0 0 0 0;
+		}
+		#draw_area {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="draw_area"></canvas>
+	
+</body>
+</html>
